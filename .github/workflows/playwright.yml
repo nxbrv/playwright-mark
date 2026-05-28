@@ -45,7 +45,7 @@ jobs:
 
       - name: Wait for servers to be ready
         run: |
-          npx wait-on http://localhost:3333 http://localhost:8080 --timeout 30000 || (
+          npx wait-on tcp:localhost:3333 http://localhost:8080 --timeout 30000 || (
             echo "=== API SERVER LOG ==="
             cat /tmp/api.log
             echo "=== WEB SERVER LOG ==="
