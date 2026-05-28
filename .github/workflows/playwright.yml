@@ -37,14 +37,21 @@ jobs:
 
       - name: Start API server
         working-directory: apps/api
-        run: yarn dev &
+        run: yarn dev > /tmp/api.log 2>&1 &
 
       - name: Start Web server
         working-directory: apps/web
-        run: yarn dev &
+        run: yarn dev > /tmp/web.log 2>&1 &
 
       - name: Wait for servers to be ready
-        run: npx wait-on http://localhost:3333 http://localhost:8080 --timeout 30000
+        run: |
+          npx wait-on http://localhost:3333 http://localhost:8080 --timeout 30000 || (
+            echo "=== API SERVER LOG ==="
+            cat /tmp/api.log
+            echo "=== WEB SERVER LOG ==="
+            cat /tmp/web.log
+            exit 1
+          )
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
